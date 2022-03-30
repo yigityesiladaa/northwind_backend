@@ -41,10 +41,10 @@ namespace Business.Concrete
 			return new SuccessDataResult<User>(userToCheck,Messages.SuccessfulLogin);
 		}
 
-		public IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password)
+		public IDataResult<User> Register(UserForRegisterDto userForRegisterDto)
 		{
 			byte[] passwordHash, passwordSalt;
-			HashingHelper.CreatePasswordHash(password,out passwordHash,out passwordSalt);
+			HashingHelper.CreatePasswordHash(userForRegisterDto.Password, out passwordHash,out passwordSalt);
 			var user = new User
 			{
 				Email = userForRegisterDto.Email,

@@ -1,5 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Transaction;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -22,8 +26,13 @@ namespace Business.Concrete
 			_productDal = productDal;
 		}
 
+		//Cross Cutting Concerns --> Validation, Cache, Log, Performance, Auth, Transaction
+		//AOP --> Aspect Orianted Programming
+
+		[ValidationAspect(typeof(ProductValidator))]
 		public IResult Add(Product product)
 		{
+
 			_productDal.Add(product);
 			return new SuccessResult(Messages.ProductAdded);
 		}
@@ -55,7 +64,12 @@ namespace Business.Concrete
 			return new SuccessDataResult<List<Product>>(_productDal.GetList(p=>p.CategoryId == categoryId).ToList());
 		}
 
-		
-		
+		[TransactionScopeAspect]
+		public IResult TransactionalOperation(Product product)
+		{
+			_productDal.Update(product);
+			_productDal.Add(product);
+			return new SuccessResult(Messages.ProductUpdated);
+		}
 	}
 }
