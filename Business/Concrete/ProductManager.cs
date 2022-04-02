@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
@@ -30,6 +31,7 @@ namespace Business.Concrete
 		//AOP --> Aspect Orianted Programming
 
 		[ValidationAspect(typeof(ProductValidator))]
+		[CacheRemoveAspect("IProductService.Get")]
 		public IResult Add(Product product)
 		{
 
@@ -59,6 +61,7 @@ namespace Business.Concrete
 			return new SuccessDataResult<List<Product>>(_productDal.GetList().ToList());
 		}
 
+		[CacheAspect(10)]
 		public IDataResult<List<Product>> GetListByCategory(int categoryId)
 		{
 			return new SuccessDataResult<List<Product>>(_productDal.GetList(p=>p.CategoryId == categoryId).ToList());
